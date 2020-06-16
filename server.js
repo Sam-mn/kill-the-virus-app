@@ -7,6 +7,12 @@ var server = http.createServer(app);
 const io = SocketIO.listen(server);
 let players = [];
 
+const getRandomPosition = (element) => {
+    var randomX = Math.floor(Math.random() * element.x);
+    var randomY = Math.floor(Math.random() * element.y);
+    return [randomX, randomY];
+};
+
 server.listen(3003, () => {
     io.on("connection", (socket) => {
         console.log("socket connected");
@@ -18,22 +24,86 @@ server.listen(3003, () => {
                 inGame: false,
                 room,
                 points: 0,
+                playingIn: room,
+                matchPoints: 0,
+                allTimePoints: 0,
             });
+
             socket.join(room);
             socket.join("general");
             console.log(players);
-            io.in("general").emit("loggedIn", players);
+            io.in("general").emit(
+                "loggedIn",
+                players.filter(({ inGame }) => inGame === false)
+            );
         });
 
-        socket.on("joinRoom", (room) => {
-            //socket.leave('general')
-            console.log("joind");
-            socket.join(room);
-            io.in(room).emit("weAreIn", room);
+        socket.on("updateReadyToPlayUsers", () => {
+            io.in("general").emit(
+                "updateUsers",
+                players.filter(({ inGame }) => inGame === false)
+            );
         });
-        socket.on("leaveRoom", (room) => {
+
+        socket.on("joinRoom", (playingRoom) => {
+            socket.join(playingRoom);
+
+            let currentRoomUsers = [];
+            for (let i = 0; i < players.length; i++) {
+                const player = players[i];
+                if (player.id === socket.id) {
+                    player.playingIn = playingRoom;
+                    player.inGame = true;
+                    currentRoomUsers.push(player);
+                }
+                if (player.room === playingRoom) {
+                    player.inGame = true;
+                    currentRoomUsers.push(player);
+                }
+            }
+
+            io.in(playingRoom).emit("weAreIn", {
+                roomName: playingRoom,
+                players: currentRoomUsers,
+            });
+        });
+
+        socket.on("click-virus", (data) => {
+            console.log("someone clicked the virus", socket.id);
+            players.forEach((player) => {
+                if (player.id === socket.id) {
+                    player.points++;
+                }
+            });
+
+            io.to(data.room).emit("change-position", getRandomPosition(data));
+        });
+
+        socket.on("userLeaveRoom", (room) => {
+            let creatorId = "";
+            for (let i = 0; i < players.length; i++) {
+                const player = players[i];
+                if (player.playingIn === room && player.room !== room) {
+                    player.playingIn = player.room;
+                    player.inGame = false;
+                    player.matchPoints = 0;
+                }
+                if (player.playingIn === room && player.room === room) {
+                    player.inGame = false;
+                    player.matchPoints = 0;
+                    creatorId = player.id;
+                }
+            }
+
+            io.in(room).emit("allPlayersLeaveRoom");
+            if (creatorId !== socket.id) {
+                socket.leave(room);
+            }
             socket.join("general");
-            socket.leave(room);
+            io.in("general").emit(
+                "updateUsers",
+                players.filter(({ inGame }) => inGame === false)
+            );
         });
     });
 });

@@ -25,6 +25,14 @@ class App extends React.Component {
         e.preventDefault();
         if (socket) {
             socket.emit("playerName", { player: this.state.PlayerName });
+            socket.on("updateUsers", (users) => {
+                let updatedPlayers = users.filter(
+                    (user) => user.id !== socket.id
+                );
+                this.setState({
+                    players: updatedPlayers,
+                });
+            });
         }
     };
 
@@ -45,7 +53,11 @@ class App extends React.Component {
         return (
             <div className="App">
                 {this.state.player ? (
-                    <OnlineUsers players={this.state.players} socket={socket} />
+                    <OnlineUsers
+                        players={this.state.players}
+                        socket={socket}
+                        playerName={this.state.PlayerName}
+                    />
                 ) : (
                     <div id="start" className="container">
                         <form
