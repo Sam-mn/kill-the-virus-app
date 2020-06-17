@@ -27,7 +27,7 @@ class onlineUsers extends React.Component {
     render() {
         if (this.props.socket) {
             this.props.socket.on("weAreIn", (data) =>
-                this.setState({ room: data.roomName })
+                this.setState({ room: data })
             );
             this.props.socket.on("allPlayersLeaveRoom", () =>
                 this.setState({
@@ -40,7 +40,7 @@ class onlineUsers extends React.Component {
             return (
                 <div>
                     <Room
-                        roomName={this.state.room}
+                        roomData={this.state.room}
                         handleLeaveRoom={this.handleLeaveRoom}
                         socket={this.props.socket}
                         changeRoomStatus={this.changeRoomStatus}
