@@ -5,10 +5,19 @@ class onlineUsers extends React.Component {
         room: null,
     };
 
+    componentWillUpdate() {
+        this.props.socket.on("weAreIn", (data) =>
+            this.setState({ room: data })
+        );
+        this.props.socket.on("allPlayersLeaveRoom", () =>
+            this.setState({
+                room: null,
+            })
+        );
+    }
+
     handleJoinRoom = (room) => {
         this.props.socket.emit("joinRoom", room);
-        this.props.socket.emit("updateReadyToPlayUsers");
-        console.log("clicked", this.props.socket);
     };
 
     handleLeaveRoom = () => {
@@ -25,17 +34,6 @@ class onlineUsers extends React.Component {
     };
 
     render() {
-        if (this.props.socket) {
-            this.props.socket.on("weAreIn", (data) =>
-                this.setState({ room: data })
-            );
-            this.props.socket.on("allPlayersLeaveRoom", () =>
-                this.setState({
-                    room: null,
-                })
-            );
-        }
-        console.log(this.props.players);
         if (this.state.room) {
             return (
                 <div>
@@ -48,7 +46,6 @@ class onlineUsers extends React.Component {
                 </div>
             );
         }
-        console.log(this.props);
 
         return (
             <div>

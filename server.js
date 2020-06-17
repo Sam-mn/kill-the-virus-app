@@ -23,7 +23,6 @@ server.listen(3003, () => {
                 username: data.player,
                 inGame: false,
                 room,
-                points: 0,
                 playingIn: room,
                 matchPoints: 0,
                 allTimePoints: 0,
@@ -34,13 +33,6 @@ server.listen(3003, () => {
             console.log(players);
             io.in("general").emit(
                 "loggedIn",
-                players.filter(({ inGame }) => inGame === false)
-            );
-        });
-
-        socket.on("updateReadyToPlayUsers", () => {
-            io.in("general").emit(
-                "updateUsers",
                 players.filter(({ inGame }) => inGame === false)
             );
         });
@@ -66,17 +58,61 @@ server.listen(3003, () => {
                 roomName: playingRoom,
                 players: currentRoomUsers,
             });
+
+            io.in("general").emit(
+                "updateUsers",
+                players.filter(({ inGame }) => inGame === false)
+            );
         });
 
         socket.on("click-virus", (data) => {
             console.log("someone clicked the virus", socket.id);
-            players.forEach((player) => {
-                if (player.id === socket.id) {
-                    player.points++;
-                }
-            });
+            let round = 1;
+            let users = [];
 
-            io.to(data.room).emit("change-position", getRandomPosition(data));
+            let inRoom = data.room;
+
+            for (let i = 0; i < players.length; i++) {
+                const player = players[i];
+                if (player.id === socket.id) {
+                    if (player.matchPoints + 1 === 6) {
+                        round = 10;
+                    } else {
+                        round = round + player.matchPoints;
+                    }
+                    player.matchPoints++;
+                    users.push(player);
+                }
+
+                if (player.id !== socket.id && player.playingIn === inRoom) {
+                    round = round + player.matchPoints;
+                    users.push(player);
+                }
+            }
+
+            if (round === 10) {
+                let draw = false;
+                for (let index = 0; index < players.length; index++) {
+                    const player = players[index];
+                    if (player.playingIn === inRoom) {
+                        if (player.matchPoints === 5) {
+                            draw = true;
+                        }
+                        player.matchPoints = 0;
+                    }
+                }
+                if (!draw) {
+                    io.in(inRoom).emit("theWinner");
+                } else {
+                    io.in(inRoom).emit("draw");
+                }
+            }
+
+            io.in(inRoom).emit("updateMatch", {
+                users,
+                randomPosition: getRandomPosition(data),
+                round,
+            });
         });
 
         socket.on("userLeaveRoom", (room) => {

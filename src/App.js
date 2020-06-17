@@ -39,7 +39,6 @@ class App extends React.Component {
     render() {
         if (socket) {
             socket.on("loggedIn", (players) => {
-                console.log(players, "logged in");
                 let otherPlayers = players.filter(
                     (player) => player.id !== socket.id
                 );
