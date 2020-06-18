@@ -6,6 +6,7 @@ const SocketIO = require("socket.io");
 var server = http.createServer(app);
 const io = SocketIO.listen(server);
 let players = [];
+app.use(express.static("build"));
 
 const getRandomPosition = (element) => {
     var randomX = Math.floor(Math.random() * element.x);

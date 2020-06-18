@@ -19,14 +19,14 @@ class Room extends React.Component {
             showTime: Date.now(),
         });
 
-        const x =
-            document.querySelector("#game-sec").offsetHeight -
-            document.querySelector("#virus").clientHeight;
-        const y =
-            document.querySelector("#game-sec").offsetWidth -
-            document.querySelector("#virus").clientWidth;
-        var randomX = Math.floor(Math.random() * x);
-        var randomY = Math.floor(Math.random() * y);
+        // const x =
+        //     document.querySelector("#game-sec").offsetHeight -
+        //     document.querySelector("#virus").clientHeight;
+        // const y =
+        //     document.querySelector("#game-sec").offsetWidth -
+        //     document.querySelector("#virus").clientWidth;
+        // var randomX = Math.floor(Math.random() * x);
+        // var randomY = Math.floor(Math.random() * y);
 
         this.props.socket.on("firstPosition", (data) => {
             this.setState({

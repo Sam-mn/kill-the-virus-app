@@ -59,7 +59,13 @@ class App extends React.Component {
                     />
                 ) : (
                     <div id="start" className="container">
-                        <h1 className="text-light">Kill the virus 🦠 game</h1>
+                        <h1 className="text-light">
+                            Kill the virus{" "}
+                            <span role="img" aria-label="virus pic">
+                                🦠
+                            </span>{" "}
+                            game
+                        </h1>
                         <form
                             id="register"
                             onSubmit={(e) => this.handleOnSubmit(e)}
