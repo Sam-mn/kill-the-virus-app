@@ -25,6 +25,7 @@ server.listen(3003, () => {
                 playingIn: room,
                 matchPoints: 0,
                 allTimePoints: 0,
+                reactTime: 0,
             });
 
             socket.join(room);
@@ -70,6 +71,7 @@ server.listen(3003, () => {
         socket.on("click-virus", (data) => {
             let round = 1;
             let users = [];
+            users.forEach((user) => (user.reactTime = 0));
 
             let inRoom = data.room;
             io.in(inRoom).emit("changePosition");
@@ -77,6 +79,7 @@ server.listen(3003, () => {
             for (let i = 0; i < players.length; i++) {
                 const player = players[i];
                 if (player.id === socket.id) {
+                    player.reactTime = data.reactTime - data.showTime;
                     if (player.matchPoints + 1 === 6) {
                         round = 10;
                     } else {
@@ -101,6 +104,7 @@ server.listen(3003, () => {
                             draw = true;
                         }
                         player.matchPoints = 0;
+                        player.reactTime = 0;
                     }
                 }
                 if (!draw) {
@@ -124,11 +128,13 @@ server.listen(3003, () => {
                     player.playingIn = player.room;
                     player.inGame = false;
                     player.matchPoints = 0;
+                    player.reactTime = 0;
                 }
                 if (player.playingIn === room && player.room === room) {
                     player.inGame = false;
                     player.matchPoints = 0;
                     creatorId = player.id;
+                    player.reactTime = 0;
                 }
             }
 

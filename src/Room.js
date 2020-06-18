@@ -10,11 +10,13 @@ class Room extends React.Component {
         players: [],
         theWinner: null,
         playAgin: false,
+        showTime: 0,
     };
 
     componentDidMount() {
         this.setState({
             players: this.props.roomData.players,
+            showTime: Date.now(),
         });
 
         const x =
@@ -52,9 +54,11 @@ class Room extends React.Component {
                 playAgin: true,
             });
         });
+
         this.props.socket.on("draw", () => {
             this.setState({ theWinner: "Draw", playAgin: true });
         });
+
         this.props.socket.on("changePosition", () => {
             this.setState({
                 hideVirus: true,
@@ -63,6 +67,7 @@ class Room extends React.Component {
             setTimeout(() => {
                 this.setState({
                     hideVirus: false,
+                    showTime: Date.now(),
                 });
             }, 3000);
         });
@@ -80,6 +85,8 @@ class Room extends React.Component {
             x,
             y,
             room: this.props.roomData.roomName,
+            reactTime: Date.now(),
+            showTime: this.state.showTime,
         });
     };
 
@@ -133,6 +140,10 @@ class Room extends React.Component {
                                                       </h1>
                                                       <p>
                                                           {player.matchPoints}
+                                                      </p>
+                                                      <p>
+                                                          {player.reactTime /
+                                                              1000}
                                                       </p>
                                                   </div>
                                               );
