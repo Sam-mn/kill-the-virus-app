@@ -1,5 +1,8 @@
 const express = require("express");
 const app = express();
+
+require("dotenv").config();
+
 const http = require("http");
 const SocketIO = require("socket.io");
 
@@ -14,7 +17,7 @@ const getRandomPosition = (element) => {
     return [randomX, randomY];
 };
 
-server.listen(3000, () => {
+server.listen(process.env.PORT, () => {
     io.on("connection", (socket) => {
         socket.on("playerName", (data) => {
             let room = `${socket.id}-${data.player}`;
