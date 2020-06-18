@@ -9,7 +9,7 @@ const SocketIO = require("socket.io");
 var server = http.createServer(app);
 const io = SocketIO.listen(server);
 let players = [];
-app.use(express.static("build"));
+// app.use(express.static("build"));
 
 const getRandomPosition = (element) => {
     var randomX = Math.floor(Math.random() * element.x);
@@ -159,6 +159,13 @@ server.listen(process.env.PORT, () => {
             io.in("general").emit(
                 "updateUsers",
                 players.filter(({ inGame }) => inGame === false)
+            );
+        });
+
+        socket.on("disconnect", () => {
+            io.emit(
+                "updateUsers",
+                (players = players.filter((player) => player.id !== socket.id))
             );
         });
     });

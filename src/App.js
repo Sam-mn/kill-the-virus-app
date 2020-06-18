@@ -12,6 +12,7 @@ class App extends React.Component {
     };
 
     componentWillMount() {
+        // socket = socketIOClient("http://localhost:3000/");
         socket = socketIOClient(
             "https://kill-the-virus-project.herokuapp.com/"
         );
