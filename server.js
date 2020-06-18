@@ -61,6 +61,10 @@ server.listen(3003, () => {
                 "updateUsers",
                 players.filter(({ inGame }) => inGame === false)
             );
+
+            io.in(playingRoom).emit("firstPosition", {
+                randomPosition: getRandomPosition({ x: 100, y: 150 }),
+            });
         });
 
         socket.on("click-virus", (data) => {

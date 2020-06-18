@@ -5,7 +5,6 @@ class Room extends React.Component {
     state = {
         hideVirus: false,
         xy: [],
-        clicked: false,
         room: null,
         round: 0,
         players: [],
@@ -17,11 +16,6 @@ class Room extends React.Component {
         this.setState({
             players: this.props.roomData.players,
         });
-        this.props.socket.on("roundNumber", (data) => {
-            this.setState({
-                round: data,
-            });
-        });
 
         const x =
             document.querySelector("#game-sec").offsetHeight -
@@ -31,8 +25,11 @@ class Room extends React.Component {
             document.querySelector("#virus").clientWidth;
         var randomX = Math.floor(Math.random() * x);
         var randomY = Math.floor(Math.random() * y);
-        this.setState({
-            xy: [randomX, randomY],
+
+        this.props.socket.on("firstPosition", (data) => {
+            this.setState({
+                xy: data.randomPosition,
+            });
         });
     }
 
@@ -44,6 +41,7 @@ class Room extends React.Component {
                 round: data.users[0].matchPoints + data.users[1].matchPoints,
             });
         });
+
         this.props.socket.on("theWinner", (data) => {
             this.setState({
                 theWinner:
