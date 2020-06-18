@@ -13,7 +13,7 @@ const getRandomPosition = (element) => {
     return [randomX, randomY];
 };
 
-server.listen(3003, () => {
+server.listen(3000, () => {
     io.on("connection", (socket) => {
         socket.on("playerName", (data) => {
             let room = `${socket.id}-${data.player}`;

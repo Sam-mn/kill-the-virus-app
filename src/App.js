@@ -12,7 +12,7 @@ class App extends React.Component {
     };
 
     componentWillMount() {
-        socket = socketIOClient("http://localhost:3003/");
+        socket = socketIOClient("http://localhost:3000/");
     }
 
     handleOnChange = (e) => {
