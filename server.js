@@ -26,6 +26,7 @@ server.listen(3003, () => {
                 matchPoints: 0,
                 allTimePoints: 0,
                 reactTime: 0,
+                won: false,
             });
 
             socket.join(room);
@@ -80,6 +81,7 @@ server.listen(3003, () => {
                 const player = players[i];
                 if (player.id === socket.id) {
                     player.reactTime = data.reactTime - data.showTime;
+                    player.won = true;
                     if (player.matchPoints + 1 === 6) {
                         round = 10;
                     } else {
@@ -87,6 +89,10 @@ server.listen(3003, () => {
                     }
                     player.matchPoints++;
                     users.push(player);
+                }
+
+                if (player.id !== socket.id) {
+                    player.won = false;
                 }
 
                 if (player.id !== socket.id && player.playingIn === inRoom) {
@@ -105,6 +111,7 @@ server.listen(3003, () => {
                         }
                         player.matchPoints = 0;
                         player.reactTime = 0;
+                        player.won = false;
                     }
                 }
                 if (!draw) {
@@ -129,12 +136,14 @@ server.listen(3003, () => {
                     player.inGame = false;
                     player.matchPoints = 0;
                     player.reactTime = 0;
+                    player.won = false;
                 }
                 if (player.playingIn === room && player.room === room) {
                     player.inGame = false;
                     player.matchPoints = 0;
                     creatorId = player.id;
                     player.reactTime = 0;
+                    player.won = false;
                 }
             }
 

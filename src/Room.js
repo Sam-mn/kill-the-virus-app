@@ -141,7 +141,13 @@ class Room extends React.Component {
                                                       <p>
                                                           {player.matchPoints}
                                                       </p>
-                                                      <p>
+                                                      <p
+                                                          className={
+                                                              player.won
+                                                                  ? "text-success"
+                                                                  : ""
+                                                          }
+                                                      >
                                                           {player.reactTime /
                                                               1000}
                                                       </p>
