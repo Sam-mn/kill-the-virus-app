@@ -59,6 +59,7 @@ class App extends React.Component {
                     />
                 ) : (
                     <div id="start" className="container">
+                        <h1 className="text-light">Kill the virus 🦠 game</h1>
                         <form
                             id="register"
                             onSubmit={(e) => this.handleOnSubmit(e)}
@@ -67,7 +68,7 @@ class App extends React.Component {
                                 <input
                                     type="text"
                                     id="PlayerName"
-                                    className="form-control form-control-lg"
+                                    className="form-control form-control-lg mt-4"
                                     required
                                     placeholder="Write your name here..."
                                     onChange={(e) => this.handleOnChange(e)}

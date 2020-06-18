@@ -49,27 +49,33 @@ class onlineUsers extends React.Component {
 
         return (
             <div>
-                <h1 className="mb-2 text-white">Online users</h1>
+                <h1 className="mb-2 text-white">Online Players</h1>
                 <h2 className="mb-4 text-white">
                     Hello {this.props.playerName}
                 </h2>
-                <ul className="m-0">
-                    {this.props.players.map((player, index) => (
-                        <li className="player" key={index}>
-                            {player.username}
-                            <span>
-                                <button
-                                    className="playerBtn ml-3 btn btn-outline-success"
-                                    onClick={() =>
-                                        this.handleJoinRoom(player.room)
-                                    }
-                                >
-                                    Join
-                                </button>
-                            </span>
-                        </li>
-                    ))}
-                </ul>
+                {this.props.players.length > 0 ? (
+                    <ul className="m-0 px-2">
+                        {this.props.players.map((player, index) => (
+                            <li className="player" key={index}>
+                                {player.username}
+                                <span>
+                                    <button
+                                        className="playerBtn ml-3 btn btn-outline-success"
+                                        onClick={() =>
+                                            this.handleJoinRoom(player.room)
+                                        }
+                                    >
+                                        Join
+                                    </button>
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p className="text-light">
+                        Waiting for other players joining the game....
+                    </p>
+                )}
             </div>
         );
     }

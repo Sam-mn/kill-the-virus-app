@@ -1,4 +1,5 @@
 import React from "react";
+import Virus from "./virus.svg";
 
 class Room extends React.Component {
     state = {
@@ -21,6 +22,7 @@ class Room extends React.Component {
                 round: data,
             });
         });
+
         const x =
             document.querySelector("#game-sec").offsetHeight -
             document.querySelector("#virus").clientHeight;
@@ -32,25 +34,10 @@ class Room extends React.Component {
         this.setState({
             xy: [randomX, randomY],
         });
-
-        this.props.socket.on("change-position", (data) => {
-            console.log("some one clicked the virus");
-            this.setState({
-                theVirus: true,
-                xy: data,
-            });
-            setTimeout(() => {
-                this.setState({
-                    hideVirus: false,
-                    clicked: false,
-                });
-            }, 3000);
-        });
     }
 
     componentWillMount() {
         this.props.socket.on("updateMatch", (data) => {
-            console.log(data);
             this.setState({
                 xy: data.randomPosition,
                 players: data.users,
@@ -70,42 +57,27 @@ class Room extends React.Component {
         this.props.socket.on("draw", () => {
             this.setState({ theWinner: "Draw", playAgin: true });
         });
+        this.props.socket.on("changePosition", () => {
+            this.setState({
+                hideVirus: true,
+            });
+
+            setTimeout(() => {
+                this.setState({
+                    hideVirus: false,
+                });
+            }, 3000);
+        });
     }
 
-    handleClickTheVirus = (e) => {
+    handleClickTheVirus = () => {
         const x =
             document.querySelector("#game-sec").offsetHeight -
             document.querySelector("#virus").clientHeight;
         const y =
             document.querySelector("#game-sec").offsetWidth -
             document.querySelector("#virus").clientWidth;
-        this.setState({
-            hideVirus: true,
-        });
-        // this.props.socket.emit("click-virus", {
-        //     x,
-        //     y,
-        //     room: this.props.roomData.roomName,
-        // });
 
-        // this.props.socket.on("change-position", (data) => {
-        //     console.log("some one clicked the virus");
-        //     this.setState({
-        //         theVirus: true,
-        //         xy: data,
-        //     });
-        //     setTimeout(() => {
-        //         this.setState({
-        //             theVirus: false,
-        //             clicked: false,
-        //         });
-        //     }, 3000);
-        // });
-        // this.props.socket.on("roundNumber", (data) => {
-        //     this.setState({
-        //         round: data,
-        //     });
-        // });
         this.props.socket.emit("click-virus", {
             x,
             y,
@@ -113,7 +85,7 @@ class Room extends React.Component {
         });
     };
 
-    handleLeaveGame = (e) => {
+    handleLeaveGame = () => {
         console.log("leave");
         this.props.socket.emit("userLeaveRoom", this.props.roomData.roomName);
         this.props.changeRoomStatus();
@@ -130,13 +102,17 @@ class Room extends React.Component {
                             <div id="game-sec">
                                 <div
                                     id="virus"
-                                    className={this.state.virus ? "hide" : ""}
+                                    className={
+                                        this.state.hideVirus ? "hide" : ""
+                                    }
                                     style={{
                                         top: `${this.state.xy[0]}px`,
                                         left: `${this.state.xy[1]}px`,
                                     }}
                                     onClick={(e) => this.handleClickTheVirus(e)}
-                                ></div>
+                                >
+                                    <img src={Virus} alt="virus" />
+                                </div>
                             </div>
 
                             <div id="info-sec">
@@ -154,7 +130,9 @@ class Room extends React.Component {
                                                       className="user"
                                                       key={player.id}
                                                   >
-                                                      <h1>{player.username}</h1>
+                                                      <h1>
+                                                          {player.username.toUpperCase()}
+                                                      </h1>
                                                       <p>
                                                           {player.matchPoints}
                                                       </p>

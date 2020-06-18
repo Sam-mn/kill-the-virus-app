@@ -15,7 +15,6 @@ const getRandomPosition = (element) => {
 
 server.listen(3003, () => {
     io.on("connection", (socket) => {
-        console.log("socket connected");
         socket.on("playerName", (data) => {
             let room = `${socket.id}-${data.player}`;
             players.push({
@@ -30,7 +29,6 @@ server.listen(3003, () => {
 
             socket.join(room);
             socket.join("general");
-            console.log(players);
             io.in("general").emit(
                 "loggedIn",
                 players.filter(({ inGame }) => inGame === false)
@@ -66,11 +64,11 @@ server.listen(3003, () => {
         });
 
         socket.on("click-virus", (data) => {
-            console.log("someone clicked the virus", socket.id);
             let round = 1;
             let users = [];
 
             let inRoom = data.room;
+            io.in(inRoom).emit("changePosition");
 
             for (let i = 0; i < players.length; i++) {
                 const player = players[i];
@@ -92,8 +90,8 @@ server.listen(3003, () => {
 
             if (round === 10) {
                 let draw = false;
-                for (let index = 0; index < players.length; index++) {
-                    const player = players[index];
+                for (let i = 0; i < players.length; i++) {
+                    const player = players[i];
                     if (player.playingIn === inRoom) {
                         if (player.matchPoints === 5) {
                             draw = true;
@@ -107,7 +105,6 @@ server.listen(3003, () => {
                     io.in(inRoom).emit("draw");
                 }
             }
-
             io.in(inRoom).emit("updateMatch", {
                 users,
                 randomPosition: getRandomPosition(data),
